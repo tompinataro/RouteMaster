@@ -1,0 +1,22 @@
+diff --git a/node_modules/expo-background-fetch/android/src/main/java/expo/modules/backgroundfetch/BackgroundFetchTaskConsumer.java b/node_modules/expo-background-fetch/android/src/main/java/expo/modules/backgroundfetch/BackgroundFetchTaskConsumer.java
+index adb32ec..852db5b 100644
+--- a/node_modules/expo-background-fetch/android/src/main/java/expo/modules/backgroundfetch/BackgroundFetchTaskConsumer.java
++++ b/node_modules/expo-background-fetch/android/src/main/java/expo/modules/backgroundfetch/BackgroundFetchTaskConsumer.java
+@@ -8,6 +8,7 @@ import android.content.Context;
+ import android.content.Intent;
+ import android.os.SystemClock;
+ import android.util.Log;
++import android.os.Bundle;
+ 
+ import expo.modules.core.interfaces.LifecycleEventListener;
+ import expo.modules.interfaces.taskManager.TaskConsumer;
+@@ -80,7 +81,8 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
+       TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
+ 
+       if (context != null) {
+-        taskManagerUtils.executeTask(mTask, null, null);
++        Bundle emptyData = new Bundle();
++        taskManagerUtils.executeTask(mTask, emptyData);
+       }
+     }
+   }

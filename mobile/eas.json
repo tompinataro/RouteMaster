@@ -1,0 +1,56 @@
+{
+  "cli": {
+    "version": ">= 13.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "development": {
+      "distribution": "internal",
+      "channel": "development",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "http://localhost:5100"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "staging",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.example.com"
+      }
+    },
+    "staging": {
+      "developmentClient": false,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.example.com"
+      },
+      "channel": "staging",
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    },
+    "production": {
+      "developmentClient": false,
+      "distribution": "store",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.example.com",
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
+        "NPM_CONFIG_FORCE": "true"
+      },
+      "ios": {
+        "resourceClass": "m-medium",
+        "image": "macos-sequoia-15.6-xcode-16.4"
+      }
+    }
+  },
+  "submit": {}
+}

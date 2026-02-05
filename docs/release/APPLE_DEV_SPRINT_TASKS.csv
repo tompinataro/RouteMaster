@@ -1,0 +1,15 @@
+Priority,Task,Details,Est (h)
+1,Register App ID,"Apple Developer → Identifiers → Register App ID: Platform iOS; Description 'Bloom Steward mobile app' (no punctuation); Bundle ID 'com.pinataro.bloomsteward' (Explicit); leave capabilities unchecked.",0.25
+2,Confirm Capabilities,"For v1.0 enable none. Defer: Push Notifications, Sign in with Apple, Associated Domains, In-App Purchase, iCloud, HealthKit, NFC. Background fetch + location already covered by Info.plist (no portal toggle).",0.2
+3,Create App in App Store Connect,"ASC → My Apps → New App: Name 'Bloom Steward', Language English (US), Bundle ID 'com.pinataro.bloomsteward', SKU 'bloom-steward-ios-1', Access Full.",0.25
+4,Enable GitHub Pages (Privacy/Support URLs),"Repo Settings → Pages → Deploy from branch: main, folder: /docs. Verify URLs: https://tompinataro.github.io/Bloom-Steward/privacy and /support.",0.2
+5,Fill Metadata in ASC,"Copy/paste from docs/release/APP_STORE_METADATA.md (Name, Subtitle, Description, Keywords, URLs, What’s New). Keep tone concise.",0.5
+6,Complete App Privacy Questionnaire,"Use docs/release/APP_PRIVACY.md + docs/release/COMPLIANCE_CHECKLIST.md: Email, Visit submissions, Approx. Location (optional), no tracking/ads/analytics.",0.5
+7,Export Compliance,"Answer 'uses encryption' and select standard HTTPS/JWT exemption per docs/release/EXPORT_COMPLIANCE.md.",0.2
+8,Capture Screenshots,"iPhone 6.7"" (1290×2796) and 6.1"" (1179×2556). Shots: Launch/Route List/Visit Details/Check In/Submit ✓. See docs/release/SCREENSHOT_SHOTLIST.md.",0.75
+9,Final Staging QA,"Follow docs/release/STAGING_QA_CHECKLIST.md: login, in-progress, submit, offline retry, admin reset; log issues with steps and build info.",1.0
+10,First iOS Production Build (EAS),"From mobile/: run 'npm i'; 'expo login'; 'npm run build:ios:prod'. On first run, let EAS create certs/profiles. Track build in EAS link.",0.5
+11,Submit iOS Build in ASC,"From mobile/: 'npm run submit:ios:latest'. In ASC: select build on v1.0.1, paste What’s New (docs/release/RELEASE_NOTES_1.0.1.md), add review notes (demo creds), screenshots, submit.",0.5
+12,Android Keystore (first-time only),"From mobile/: 'npx eas build -p android --profile preview' (interactive) to generate/upload keystore once; required before CI/non-interactive builds.",0.3
+13,Android Internal Build (optional),"After keystore: 'npm run build:android:internal' (APK) or let CI job 'EAS Preview (Android)' run on main.",0.2
+14,Production API Domain (optional),"If moving off Heroku URL: follow docs/release/PRODUCTION_API_DOMAIN.md to set CNAME + TLS; update 'mobile/eas.json' production env; smoke test /health.",0.5

@@ -1,0 +1,68 @@
+{
+  "name": "mobile",
+  "version": "1.0.3",
+  "npmConfig": {
+    "legacy-peer-deps": true
+  },
+  "engines": {
+    "node": ">=20.19.4"
+  },
+  "scripts": {
+    "start": "expo start --tunnel",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "dev:local": "sh ./scripts/dev-local.sh",
+    "publish:dev": "sh ./scripts/publish-dev.sh",
+    "build:dev": "sh ./scripts/build-dev.sh",
+    "env:dev": "printf \"EXPO_PUBLIC_API_URL=http://localhost:5100\\n\" > .env && cat .env",
+    "env:prod": "printf \"EXPO_PUBLIC_API_URL=https://api.example.com\\n\" > .env && cat .env",
+    "env:prod:custom": "sh -c 'printf \"EXPO_PUBLIC_API_URL=$EXPO_PUBLIC_API_URL\\n\" > .env && cat .env'",
+    "env:stage": "printf \"EXPO_PUBLIC_API_URL=https://api.example.com\\n\" > .env && cat .env",
+    "build:ios:preview": "eas build -p ios --profile preview",
+    "build:ios:prod": "eas build -p ios --profile production",
+    "build:ios:staging": "eas build -p ios --profile staging",
+    "submit:ios:latest": "eas submit -p ios --latest",
+    "submit:ios:prod": "eas submit -p ios",
+    "build:android:internal": "eas build -p android --profile preview",
+    "build:android:prod": "eas build -p android --profile production",
+    "submit:android:latest": "eas submit -p android --latest",
+    "preflight": "npx expo-doctor --verbose && npx expo install --check",
+    "postinstall": "node ./scripts/patch-background-fetch.js && node ./scripts/patch-rn-gradle-plugin.js"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~6.1.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/stack": "^6.4.1",
+    "@types/react": "~19.1.10",
+    "axios": "^1.11.0",
+    "expo": "~54.0.32",
+    "expo-asset": "~12.0.9",
+    "expo-background-fetch": "~14.0.9",
+    "expo-dev-client": "~6.0.17",
+    "expo-location": "~19.0.8",
+    "expo-mail-composer": "~15.0.2",
+    "expo-sqlite": "~16.0.10",
+    "expo-status-bar": "~3.0.9",
+    "expo-task-manager": "~14.0.9",
+    "expo-updates": "~29.0.16",
+    "is-arrayish": "^0.3.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-web": "^0.21.0",
+    "typescript": "~5.9.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@expo/cli": "^0.24.20",
+    "@react-native-community/cli": "^20.1.0",
+    "@react-native-community/cli-platform-android": "^20.1.0",
+    "@types/react": "~19.1.10"
+  },
+  "private": true
+}

@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "RouteMaster",
+    "slug": "routemaster",
+    "version": "1.2.2",
+    "assetBundlePatterns": [
+      "assets/*"
+    ],
+    "runtimeVersion": "1.0.0",
+    "updates": {},
+    "ios": {
+      "bundleIdentifier": "com.tixpy.routemaster"
+    },
+    "android": {
+      "package": "com.tixpy.routemaster"
+    }
+  }
+}
