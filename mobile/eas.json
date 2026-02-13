@@ -52,5 +52,14 @@
       }
     }
   },
-  "submit": {}
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6759133476",
+        "ascApiKeyPath": "/Users/tompinataro/My-Repos-VSCode/ASC/AuthKey_2L7M5JL9KC.p8",
+        "ascApiKeyIssuerId": "9ebcfd8f-4cb2-4b83-8f5e-2d1f56e22151",
+        "ascApiKeyId": "2L7M5JL9KC"
+      }
+    }
+  }
 }

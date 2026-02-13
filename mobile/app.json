@@ -13,6 +13,11 @@
     },
     "android": {
       "package": "com.tixpy.routemaster"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1e03504c-6e3a-41ee-9e20-56fa86a848b6"
+      }
     }
   }
 }
