@@ -6,7 +6,7 @@
 - **What to call them:** Tom
 - **Pronouns:** *(optional)*
 - **Timezone:** America/Chicago
-- **Notes:** Prefers being referred to by name ("Tom") in messages.
+- **Notes:** Prefers being referred to by name ("Tom") in messages. Likes occasional Italian phrases included with English translations to practice.
 
 ## Context
 
