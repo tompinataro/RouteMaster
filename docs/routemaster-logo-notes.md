@@ -31,3 +31,4 @@ All current SVG logo/icon assets are stored here:
 ## Repo hygiene
 
 - Avoid committing local Clawdbot workspace/meta files (e.g., `SOUL.md`, `AGENTS.md`, `tmp/`, `wireframes/`) to the RouteMaster product repo unless explicitly desired.
+- Branching: Tom is the sole maintainer and is OK with direct commits to `main` (no PR required for routine changes).
