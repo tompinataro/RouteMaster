@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, phase1-integration ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install deps
+        run: npm install
+      - name: Install lint deps (CI)
+        run: npm install --no-audit --no-fund --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Test (server)
+        run: npm run test -- --run
+      - name: Build
+        run: npm run build
+      - name: Install mobile deps
+        working-directory: mobile
+        run: npm install
+      - name: Typecheck (mobile)
+        run: npx tsc -p mobile/tsconfig.json --noEmit
+
+  eas-preview:
+    name: EAS Preview (iOS)
+    runs-on: ubuntu-latest
+    needs: build-and-check
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.EXPO_TOKEN != '' }}
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Expo login and setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Start iOS preview build (no-wait)
+        run: |
+          npx eas build --platform ios --profile preview --non-interactive --no-wait
+
+  eas-preview-android:
+    name: EAS Preview (Android)
+    runs-on: ubuntu-latest
+    needs: build-and-check
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.EXPO_TOKEN != '' }}
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Expo login and setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Start Android preview build (no-wait)
+        run: |
+          npx eas build --platform android --profile preview --non-interactive --no-wait

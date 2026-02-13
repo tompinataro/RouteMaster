@@ -1,0 +1,64 @@
+pluginManagement {
+  repositories {
+    mavenCentral()
+    google()
+    gradlePluginPortal()
+  }
+  resolutionStrategy {
+    eachPlugin {
+      if (requested.id.id == "org.jetbrains.kotlin.android" ||
+          requested.id.id == "org.jetbrains.kotlin.jvm" ||
+          requested.id.id == "org.jetbrains.kotlin.kapt" ||
+          requested.id.id == "org.jetbrains.kotlin.plugin.serialization") {
+        useVersion("2.1.20")
+      }
+    }
+  }
+
+  def rnPlugin = new File(rootDir, "../node_modules/@react-native/gradle-plugin")
+  if (!rnPlugin.exists()) {
+    throw new GradleException("Could not find @react-native/gradle-plugin in mobile/node_modules")
+  }
+  includeBuild(rnPlugin.absolutePath)
+
+  def expoPlugin = new File(rootDir, "../node_modules/expo-modules-autolinking/android/expo-gradle-plugin")
+  if (!expoPlugin.exists()) {
+    throw new GradleException("Could not find expo-modules-autolinking android plugin in mobile/node_modules")
+  }
+  includeBuild(expoPlugin.absolutePath)
+}
+
+plugins {
+  id("expo-autolinking-settings")
+  id("com.facebook.react.settings")
+}
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { config ->
+  config.autolinkLibrariesFromCommand()
+}
+
+expoAutolinking {
+  projectRoot = new File(rootDir, "..")
+}
+
+expoAutolinking.useExpoModules()
+
+rootProject.name = 'bloom-steward'
+
+expoAutolinking.useExpoVersionCatalog { catalog ->
+  catalog.version("kotlin", "2.1.20")
+  catalog.version("ksp", "2.1.20-2.0.1")
+}
+
+include ':app'
+includeBuild(new File(rootDir, "../node_modules/@react-native/gradle-plugin").absolutePath)
+
+def expoAndroid = new File(rootDir, "../node_modules/expo/android")
+if (!expoAndroid.exists()) {
+  expoAndroid = new File(rootDir, "../../node_modules/expo/android")
+}
+if (!expoAndroid.exists()) {
+  throw new GradleException("Could not find expo Android project in node_modules")
+}
+include(":expo")
+project(":expo").projectDir = expoAndroid

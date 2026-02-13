@@ -1,0 +1,8 @@
+# SwiftLint configuration for the Bloom Steward iOS app.
+excluded:
+  - ios/Pods
+  - ios/build
+  - ios/BloomSteward/noop-file.swift
+included:
+  - ios
+reporter: "xcode"

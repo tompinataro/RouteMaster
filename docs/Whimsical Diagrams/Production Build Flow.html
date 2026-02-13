@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bloom Steward – Runtime & Build Lifecycle</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #001f3f; color: #ffffff; margin: 0; padding: 20px; }
+    h1 { color: #7FDBFF; text-align: center; margin-bottom: 24px; }
+    h2 { color: #39CCCC; margin-top: 30px; text-align: center; }
+    .grid-container { display: grid; grid-template-columns: 1fr; gap: 40px; }
+    @media (min-width: 900px) {
+      .grid-container { grid-template-columns: 1fr 1fr; }
+    }
+    .flowchart-container { display: flex; flex-direction: row; gap: 20px; overflow-x: auto; align-items: flex-start; margin-top: 20px; }
+    .step { background: rgba(70,70,90,0.8); padding: 16px; border-radius: 12px; min-width: 200px; text-align: center; box-shadow: 0 0 12px rgba(0,180,255,0.5); }
+    .arrow { font-size: 2rem; color: #7FDBFF; align-self: center; }
+    h3 { margin-bottom: 6px; font-size: 1.1rem; }
+    p { font-size: 0.85rem; color: #cccccc; margin: 4px 0; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-bottom: 6px; }
+    .blue { background: #0074D9; color: white; }
+    .teal { background: #39CCCC; color: white; }
+    .purple { background: #B10DC9; color: white; }
+    .pink { background: #F012BE; color: white; }
+    .caption { text-align: center; font-size: 0.85rem; color: #aaa; margin-top: 12px; max-width: 800px; margin-left: auto; margin-right: auto; }
+  </style>
+</head>
+<body>
+  <h1>Bloom Steward – System Documentation</h1>
+
+  <div class="grid-container">
+    <!-- User Request Lifecycle -->
+    <div>
+      <h2>User Request Lifecycle</h2>
+      <div class="flowchart-container">
+        <!-- Client -->
+        <div class="step">
+          <h3>Client / Mobile</h3>
+          <span class="badge blue">Presentation</span>
+          <p>React Native + Typescript</p>
+          <p>ASC (App Steward Console)</p>
+        </div>
+        <div class="arrow">➡️</div>
+
+        <!-- API -->
+        <div class="step">
+          <h3>API Gateway</h3>
+          <span class="badge teal">Transport</span>
+          <p>Handles requests</p>
+          <p>Integrates <strong>EAS (subscription)</strong></p>
+        </div>
+        <div class="arrow">➡️</div>
+
+        <!-- Application -->
+        <div class="step">
+          <h3>Application Logic</h3>
+          <span class="badge purple">Logic</span>
+          <p>Business rules & validation</p>
+          <p>Codex-assisted coding in VSCode</p>
+        </div>
+        <div class="arrow">➡️</div>
+
+        <!-- Data Access -->
+        <div class="step">
+          <h3>Data Access Layer</h3>
+          <span class="badge purple">DAL</span>
+          <p>ORM / SQL queries</p>
+          <p>Stewardship data checks</p>
+        </div>
+        <div class="arrow">➡️</div>
+
+        <!-- Database -->
+        <div class="step">
+          <h3>Database</h3>
+          <span class="badge pink">Storage</span>
+          <p>PostgreSQL</p>
+          <p>Steward logs & metadata</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Developer Build Lifecycle -->
+    <div>
+      <h2>Developer Build Lifecycle</h2>
+      <div class="flowchart-container">
+        <div class="step"><h3>1. Pull Repo</h3><p>Clone source from GitHub/GitLab</p></div>
+        <div class="arrow">➡️</div>
+
+        <div class="step"><h3>2. Install Deps</h3><p>npm / yarn install</p></div>
+        <div class="arrow">➡️</div>
+
+        <div class="step"><h3>3. Prebuild</h3><p>Expo merges RN JS/TS, Metro bundle, native config (Gradle/Xcode), assets & modules into a native project.</p></div>
+        <div class="arrow">➡️</div>
+
+        <div class="step"><h3>4. Metro Bundle</h3><p>Bundles JavaScript and assets</p></div>
+        <div class="arrow">➡️</div>
+
+        <div class="step"><h3>5. Compile</h3><p>Gradle + Android SDK → .apk/.aab<br>Xcode + clang → .ipa</p></div>
+        <div class="arrow">➡️</div>
+
+        <div class="step"><h3>6. Output</h3><p>Final results: Android .aab/.apk and iOS .ipa binaries + native resources</p></div>
+      </div>
+      <div class="caption">
+        <p><strong>Note:</strong> Expo orchestrates the build process, but the underlying compilers are the official Android and Apple toolchains (Gradle/Android SDK and Xcode/clang). Expo ensures correct config and packaging, but does not replace the native compilers.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
