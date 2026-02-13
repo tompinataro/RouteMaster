@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="RouteMaster RM vehicle logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7A1E2C"/>
+      <stop offset="1" stop-color="#C28A8A"/>
+    </linearGradient>
+
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+
+    <style>
+      .ink { fill: #111111; }
+      .paper { fill: #FFFFFF; }
+      .burg { fill: #7A1E2C; }
+      .rose { fill: #C28A8A; }
+      .stroke { stroke: #111111; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+      .stroke2 { stroke: #111111; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect x="28" y="28" width="456" height="456" rx="110" fill="url(#bg)"/>
+
+  <!-- Whole mark (slight bob) -->
+  <g filter="url(#softShadow)">
+    <g>
+      <animateTransform attributeName="transform" type="translate"
+        values="0 0; 0 -3; 0 0; 0 2; 0 0" dur="1.6s" repeatCount="indefinite"/>
+
+      <!-- Motion lines -->
+      <g opacity="0.9">
+        <path d="M88 255 C58 245, 58 215, 88 205" class="paper" opacity="0.55"/>
+        <path d="M96 292 C60 285, 60 260, 96 252" class="paper" opacity="0.35"/>
+        <path d="M92 222 C62 215, 62 195, 92 188" class="paper" opacity="0.25"/>
+        <animate attributeName="opacity" values="0.65;0.25;0.65" dur="0.9s" repeatCount="indefinite"/>
+      </g>
+
+      <!-- Vehicle body base -->
+      <path d="M124 312
+               C140 250, 190 200, 255 200
+               C330 200, 382 248, 400 312
+               L420 312
+               C434 312, 446 324, 446 338
+               L446 354
+               C446 368, 434 380, 420 380
+               L124 380
+               C110 380, 98 368, 98 354
+               L98 338
+               C98 324, 110 312, 124 312 Z"
+            class="paper"/>
+      <path d="M124 312
+               C140 250, 190 200, 255 200
+               C330 200, 382 248, 400 312
+               L420 312
+               C434 312, 446 324, 446 338
+               L446 354
+               C446 368, 434 380, 420 380
+               L124 380
+               C110 380, 98 368, 98 354
+               L98 338
+               C98 324, 110 312, 124 312 Z"
+            fill="none" class="stroke"/>
+
+      <!-- “RM” letters integrated as body panels -->
+      <!-- R -->
+      <path d="M170 332
+               L170 236
+               Q170 224, 182 224
+               L220 224
+               Q255 224, 255 256
+               Q255 286, 220 288
+               L196 288
+               L255 352
+               L224 352
+               L186 304
+               L196 304
+               L220 304
+               Q275 304, 275 256
+               Q275 206, 220 206
+               L176 206
+               Q150 206, 150 234
+               L150 352
+               Q150 364, 162 364
+               L170 364 Z"
+            class="burg"/>
+      <path d="M170 332
+               L170 236
+               Q170 224, 182 224
+               L220 224
+               Q255 224, 255 256
+               Q255 286, 220 288
+               L196 288
+               L255 352
+               L224 352
+               L186 304
+               L196 304
+               L220 304
+               Q275 304, 275 256
+               Q275 206, 220 206
+               L176 206
+               Q150 206, 150 234
+               L150 352
+               Q150 364, 162 364
+               L170 364 Z"
+            fill="none" class="stroke2"/>
+
+      <!-- M -->
+      <path d="M282 362
+               L282 226
+               Q282 206, 302 206
+               Q314 206, 324 218
+               L350 250
+               L376 218
+               Q386 206, 398 206
+               Q418 206, 418 226
+               L418 362
+               L396 362
+               L396 244
+               L352 296
+               L304 244
+               L304 362 Z"
+            class="rose"/>
+      <path d="M282 362
+               L282 226
+               Q282 206, 302 206
+               Q314 206, 324 218
+               L350 250
+               L376 218
+               Q386 206, 398 206
+               Q418 206, 418 226
+               L418 362
+               L396 362
+               L396 244
+               L352 296
+               L304 244
+               L304 362 Z"
+            fill="none" class="stroke2"/>
+
+      <!-- Window / dash -->
+      <path d="M188 260
+               C210 232, 236 220, 266 220
+               C294 220, 318 230, 338 252
+               C318 266, 294 274, 266 274
+               C234 274, 208 270, 188 260 Z"
+            fill="#FFFFFF" opacity="0.6" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>
+
+      <!-- Wheels -->
+      <g transform="translate(0,0)">
+        <!-- Left wheel -->
+        <g transform="translate(182 380)">
+          <circle r="34" class="ink"/>
+          <circle r="18" class="paper" opacity="0.9"/>
+          <path d="M0 -28 L0 28 M-28 0 L28 0" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.65"/>
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.9s" repeatCount="indefinite"/>
+        </g>
+
+        <!-- Right wheel -->
+        <g transform="translate(362 380)">
+          <circle r="34" class="ink"/>
+          <circle r="18" class="paper" opacity="0.9"/>
+          <path d="M0 -28 L0 28 M-28 0 L28 0" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.65"/>
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.9s" repeatCount="indefinite"/>
+        </g>
+      </g>
+
+      <!-- Little “smile” grille -->
+      <path d="M256 330 C270 336, 284 336, 298 330" fill="none" stroke="#111111" stroke-width="10" stroke-linecap="round"/>
+
+      <!-- Subtle speed tilt (tiny) -->
+      <animateTransform attributeName="transform" type="skewX"
+        values="0; -0.6; 0; 0.4; 0" dur="1.6s" repeatCount="indefinite"/>
+    </g>
+  </g>
+</svg>
