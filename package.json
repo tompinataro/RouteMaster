@@ -65,7 +65,13 @@
     "test": "vitest",
     "dev": "ts-node-dev --respawn --transpile-only server/server.ts",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "action-grid:runner": "node action-grid/runner.mjs",
+    "action-grid:tg-listener": "node action-grid/tg-listener.mjs",
+    "action-grid:up": "node action-grid/control.mjs up",
+    "action-grid:down": "node action-grid/control.mjs down",
+    "action-grid:status": "node action-grid/control.mjs status",
+    "action-grid:logs": "node action-grid/control.mjs logs"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
