@@ -1,0 +1,6 @@
+daemon.pid
+daemon.log
+runner-loop.log
+tg-listener.log
+.telegram-offset
+projects.csv.bak.*
