@@ -4,3 +4,4 @@ runner-loop.log
 tg-listener.log
 .telegram-offset
 projects.csv.bak.*
+tracker-view.csv

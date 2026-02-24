@@ -119,6 +119,7 @@ It owns both loops:
 - immediate runner invocation on Telegram `YES`/`RUN <project>`
 - row snapshot query on Telegram `SHOW <project>`
 - all-project status summary on Telegram `STATUS`
+- tracker sync on Telegram `SHEET`
 - quick command/field guide on Telegram `HELP`
 - hard submission verification on Telegram `VERIFY <project>`
 
@@ -134,6 +135,30 @@ Log file:
 
 - `action-grid/daemon.log` (append-only)
 
+## Google Sheet Tracker
+
+Generate a tracker-style CSV snapshot from `projects.csv`:
+
+```bash
+npm run -s action-grid:sheet-sync
+```
+
+This always writes:
+
+- `action-grid/tracker-view.csv`
+
+Optional live Google Sheets sync (same command):
+
+- `ACTION_GRID_GOOGLE_SHEET_ID` (required to enable remote sync)
+- `ACTION_GRID_GOOGLE_SHEET_TAB` (optional, default: `Tracker`)
+- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+- `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
+
+Setup note:
+
+- share the target Google Sheet with `GOOGLE_SERVICE_ACCOUNT_EMAIL` as an editor
+- for private key in `.env`, use either literal newlines or `\n` escapes
+
 ## How Tom Runs This While Traveling
 
 1. Set env vars once in shell profile or exported session:
@@ -141,6 +166,7 @@ Log file:
    - `TELEGRAM_CHAT_ID`
    - `ACTION_GRID_EXECUTOR`
    - `EXPO_TOKEN` (required for `VERIFY <project>`)
+   - `ACTION_GRID_GOOGLE_SHEET_ID` + Google service account vars (required for `SHEET`)
 2. Start daemon:
    - `npm run action-grid:up`
 3. Check health quickly:
@@ -174,6 +200,9 @@ Log file:
      - updates ASC/Google Play statuses based on verified `FINISHED` submissions
    - reply `STATUS`:
      - bot replies with all project rows and lifecycle progress in one summary
+   - reply `SHEET`:
+     - bot regenerates `action-grid/tracker-view.csv`
+     - if Google Sheet env vars are configured, bot syncs the tracker tab
    - reply `HELP` (or `?`):
      - bot replies with heading definitions and command examples
    - reply `NO`:

@@ -451,6 +451,7 @@ function formatHelpText() {
     "",
     "Commands:",
     "- STATUS",
+    "- SHEET",
     "- VERIFY <project>",
     "- SHOW <project>",
     "- RUN <project>",
@@ -460,6 +461,7 @@ function formatHelpText() {
     "",
     "Examples:",
     "- SHOW pool-steward",
+    "- SHEET",
     "- RUN routemaster",
     "- SET routemaster asc_submission_evidence https://appstoreconnect.apple.com/...",
     "- SET routemaster gplay_submission_evidence https://play.google.com/console/...",
@@ -563,6 +565,50 @@ function runVerifierOnce(project, reason) {
   });
 }
 
+function runSheetSyncOnce(reason) {
+  return new Promise((resolve) => {
+    const command = (process.env.ACTION_GRID_SHEET_SYNC_CMD ?? "node action-grid/sheet-sync.mjs").trim();
+    const child = spawn(command, {
+      cwd: REPO_ROOT,
+      env: process.env,
+      shell: true,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    let stderr = "";
+    let settled = false;
+    const finish = (outcome) => {
+      if (settled) return;
+      settled = true;
+      resolve(outcome);
+    };
+
+    log(`sheet-sync start (${reason}) cmd=${command} pid=${child.pid ?? "n/a"}`);
+
+    child.stdout.on("data", (chunk) => {
+      const text = String(chunk).trimEnd();
+      stdout += String(chunk);
+      if (text) log(`sheet-sync stdout: ${text}`);
+    });
+    child.stderr.on("data", (chunk) => {
+      const text = String(chunk).trimEnd();
+      stderr += String(chunk);
+      if (text) log(`sheet-sync stderr: ${text}`);
+    });
+
+    child.on("error", (err) => {
+      log(`sheet-sync spawn error: ${err?.message ?? String(err)}`);
+      finish({ code: 127, signal: null, stdout, stderr: `${stderr}\n${err?.message ?? String(err)}`.trim() });
+    });
+
+    child.on("exit", (code, signal) => {
+      log(`sheet-sync exit code=${code ?? "null"} signal=${signal ?? "null"}`);
+      finish({ code: code ?? null, signal: signal ?? null, stdout, stderr });
+    });
+  });
+}
+
 function queueSerial(taskFactory) {
   const runPromise = runnerChain.then(() => taskFactory());
   runnerChain = runPromise.catch(() => ({ code: -1, signal: null, stdout: "", stderr: "" }));
@@ -575,6 +621,10 @@ function queueRunner(reason) {
 
 function queueVerifier(project, reason) {
   return queueSerial(() => runVerifierOnce(project, reason));
+}
+
+function queueSheetSync(reason) {
+  return queueSerial(() => runSheetSyncOnce(reason));
 }
 
 function runnerOutcomeText(outcome) {
@@ -607,6 +657,33 @@ async function runVerifyAndReport(chatId, project, reason) {
   await sendTelegramMessage(verifierOutcomeText(project, outcome), chatId);
 }
 
+function sheetSyncOutcomeText(outcome) {
+  const stdoutLines = String(outcome?.stdout ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const first = stdoutLines[0] ?? "";
+  const second = stdoutLines[1] ?? "";
+
+  if (outcome?.code === 0) {
+    return `✅ Sheet sync complete\n${first || "Tracker updated."}${second ? `\n${second}` : ""}`;
+  }
+  if (outcome?.signal) {
+    return `❌ Sheet sync failed (signal ${outcome.signal}).`;
+  }
+  const stderrLine =
+    String(outcome?.stderr ?? "")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .find(Boolean) ?? "";
+  return `❌ Sheet sync failed (exit ${outcome?.code ?? "unknown"})${stderrLine ? `\n${stderrLine}` : ""}`;
+}
+
+async function runSheetSyncAndReport(chatId, reason) {
+  const outcome = await queueSheetSync(reason);
+  await sendTelegramMessage(sheetSyncOutcomeText(outcome), chatId);
+}
+
 async function handleTelegramMessage(textRaw, chatId) {
   const text = String(textRaw ?? "");
   log(`telegram message received: ${text}`);
@@ -621,6 +698,13 @@ async function handleTelegramMessage(textRaw, chatId) {
     const summary = formatPortfolioStatus();
     log("STATUS -> portfolio summary");
     await sendTelegramMessage(summary.message, chatId);
+    return;
+  }
+
+  if (/^\s*(SHEET|SYNC\s+SHEET)\s*$/i.test(text)) {
+    log("SHEET -> sync tracker");
+    await sendTelegramMessage("📄 Syncing Action Grid tracker sheet now…", chatId);
+    await runSheetSyncAndReport(chatId, "telegram-sheet-sync");
     return;
   }
 
