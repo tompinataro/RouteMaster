@@ -87,6 +87,8 @@ function newestArtifact(repoPath, ext) {
 
 function fail(row, header, rows, reason, guidance) {
   row[statusColumn] = "BLOCKED";
+  const completedKey = statusColumn.replace(/_status$/, "_completed_at");
+  if (completedKey in row) row[completedKey] = "";
   row.row_overall_status = "BLOCKED";
   row.next_row_permission = "PAUSE";
   writeCsv(csvPath, header, rows);

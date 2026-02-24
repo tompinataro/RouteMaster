@@ -316,6 +316,17 @@ function setProjectField(projectRaw, fieldRaw, valueRaw) {
   row[resolvedField] = finalValue;
 
   if (resolvedField.endsWith("_status")) {
+    const completedField = resolvedField.replace(/_status$/, "_completed_at");
+    if (header.includes(completedField)) {
+      if (finalValue === "DONE") {
+        if (!normalize(row[completedField])) {
+          row[completedField] = nowIso();
+        }
+      } else {
+        row[completedField] = "";
+      }
+    }
+
     if (finalValue === "BLOCKED") {
       row.row_overall_status = "BLOCKED";
       row.next_row_permission = "PAUSE";

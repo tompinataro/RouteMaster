@@ -53,6 +53,8 @@ function markBlockedAndPersist(header, rows, project, statusColumn, reason) {
   const row = findRowByProject(rows, project);
   if (!row) return;
   row[statusColumn] = "BLOCKED";
+  const completedAtKey = statusColumn.replace(/_status$/, "_completed_at");
+  if (completedAtKey in row) row[completedAtKey] = "";
   row.row_overall_status = "BLOCKED";
   writeTable(header, rows);
   const message =
@@ -162,6 +164,8 @@ async function main() {
 
     if (refreshedStatus === "BLOCKED") {
       refreshed.row_overall_status = "BLOCKED";
+      const completedAtKey = statusColumn.replace(/_status$/, "_completed_at");
+      if (completedAtKey in refreshed) refreshed[completedAtKey] = "";
       writeTable(header, rows);
       await sendTelegramMessage(
         `Action-grid BLOCKED\nProject: ${project}\nTask: ${statusColumn}\nReason: task reported BLOCKED`,
