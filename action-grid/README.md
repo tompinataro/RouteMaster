@@ -110,6 +110,7 @@ It owns both loops:
 - periodic runner trigger every 30s (only when a row is `READY+GO`)
 - immediate runner invocation on Telegram `YES`/`RUN <project>`
 - row snapshot query on Telegram `SHOW <project>`
+- all-project status summary on Telegram `STATUS`
 
 Control:
 
@@ -156,6 +157,8 @@ Log file:
        - all `*_status` values
        - populated `*_completed_at` timestamps
        - key metadata fields (`repo_path`, artifact paths, IDs, submission evidence, etc.)
+   - reply `STATUS`:
+     - bot replies with all project rows and lifecycle progress in one summary
    - reply `NO`:
      - bot ACK: `⏸️ Paused — no new project started.`
      - no row changes

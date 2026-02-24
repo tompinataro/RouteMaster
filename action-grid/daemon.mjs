@@ -385,6 +385,36 @@ function formatProjectSummary(projectRaw) {
   return { ok: true, project: row.project ?? projectName, message: lines.join("\n") };
 }
 
+function formatPortfolioStatus() {
+  const { rows } = readCsv(CSV_PATH);
+  if (!rows.length) {
+    return { ok: true, message: "📊 Action Grid status\nNo project rows found." };
+  }
+
+  const counts = new Map();
+  for (const row of rows) {
+    const state = String(row.row_overall_status ?? "").trim().toUpperCase() || "UNKNOWN";
+    counts.set(state, (counts.get(state) ?? 0) + 1);
+  }
+
+  const order = ["READY", "RUNNING", "BLOCKED", "DONE", "BACKLOG", "UNKNOWN"];
+  const countLine = order
+    .filter((key) => counts.has(key))
+    .map((key) => `${key}:${counts.get(key)}`)
+    .join(" | ");
+
+  const lines = ["📊 Action Grid status", countLine, ""];
+
+  for (const row of rows) {
+    const project = String(row.project ?? "").trim() || "(unknown)";
+    lines.push(
+      `${project} | overall=${String(row.row_overall_status ?? "").trim() || "(blank)"} | permission=${String(row.next_row_permission ?? "").trim() || "(blank)"} | ios=${String(row.build_ios_ipa_status ?? "").trim() || "(blank)"} | android=${String(row.build_android_aab_status ?? "").trim() || "(blank)"} | asc=${String(row.asc_submission_status ?? "").trim() || "(blank)"} | gplay=${String(row.gplay_submission_status ?? "").trim() || "(blank)"} | ci=${String(row.ci_pipeline_status ?? "").trim() || "(blank)"} | release=${String(row.release_ready_status ?? "").trim() || "(blank)"}`,
+    );
+  }
+
+  return { ok: true, message: lines.join("\n") };
+}
+
 function runRunnerOnce(reason) {
   return new Promise((resolve) => {
     const npmBin =
@@ -450,6 +480,13 @@ async function runNowAndReport(chatId, reason) {
 async function handleTelegramMessage(textRaw, chatId) {
   const text = String(textRaw ?? "");
   log(`telegram message received: ${text}`);
+
+  if (/^\s*STATUS(?:\s+ALL)?\s*$/i.test(text)) {
+    const summary = formatPortfolioStatus();
+    log("STATUS -> portfolio summary");
+    await sendTelegramMessage(summary.message, chatId);
+    return;
+  }
 
   const showMatch = text.match(/^\s*SHOW\s+(.+?)\s*$/i);
   if (showMatch) {
