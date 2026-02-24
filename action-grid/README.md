@@ -21,6 +21,8 @@ Rules implemented:
 - executes ONLY executable `*_status` lifecycle columns left-to-right:
   - `build_ios_ipa_status`
   - `build_android_aab_status`
+  - `test_ios_device_status`
+  - `test_android_device_status`
   - `asc_submission_status`
   - `gplay_submission_status`
   - `ci_pipeline_status`
@@ -28,6 +30,8 @@ Rules implemented:
 - never executes metadata columns such as:
   - `build_ios_ipa_completed_at`, `ipa_path`
   - `build_android_aab_completed_at`, `aab_path`
+  - `test_ios_device_completed_at`, `ios_test_evidence`
+  - `test_android_device_completed_at`, `android_test_evidence`
   - `asc_submission_completed_at`, `asc_app_id`, `asc_build_number`
   - `gplay_submission_completed_at`, `gplay_package_name`, `gplay_version_code`
   - `ci_pipeline_completed_at`, `release_ready_completed_at`
@@ -59,6 +63,10 @@ Common unblock actions:
   - build an `.ipa` and set `ipa_path` to the absolute file path
 - `build_android_aab_status` blocked:
   - build an `.aab` and set `aab_path`
+- `test_ios_device_status` blocked:
+  - install the IPA on a real iOS device, validate core flows, then set `ios_test_evidence`
+- `test_android_device_status` blocked:
+  - install the AAB build on a real Android device, validate core flows, then set `android_test_evidence`
 - `asc_submission_status` blocked:
   - ensure `ipa_path` exists, then fill `asc_app_id`, `asc_build_number`, and `asc_submission_evidence`
 - `gplay_submission_status` blocked:

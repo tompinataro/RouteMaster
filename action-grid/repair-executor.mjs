@@ -11,6 +11,8 @@ const csvPath = process.env.ACTION_GRID_CSV_PATH;
 const EXECUTABLE_STATUS_COLUMNS = [
   "build_ios_ipa_status",
   "build_android_aab_status",
+  "test_ios_device_status",
+  "test_android_device_status",
   "asc_submission_status",
   "gplay_submission_status",
   "ci_pipeline_status",
@@ -174,6 +176,48 @@ function validateAndRepair(row, header, rows) {
       }
       break;
     }
+    case "test_ios_device_status": {
+      if (!isNonEmpty(row.ipa_path) || !existsFile(row.ipa_path)) {
+        fail(
+          row,
+          header,
+          rows,
+          "iOS device testing requires a valid ipa_path artifact.",
+          "Complete build_ios_ipa_status with a real IPA path first.",
+        );
+      }
+      if (!hasRealEvidence(row.ios_test_evidence)) {
+        fail(
+          row,
+          header,
+          rows,
+          "iOS device test evidence missing.",
+          "Set ios_test_evidence (tester/device/OS/date/result) after human device testing.",
+        );
+      }
+      break;
+    }
+    case "test_android_device_status": {
+      if (!isNonEmpty(row.aab_path) || !existsFile(row.aab_path)) {
+        fail(
+          row,
+          header,
+          rows,
+          "Android device testing requires a valid aab_path artifact.",
+          "Complete build_android_aab_status with a real AAB path first.",
+        );
+      }
+      if (!hasRealEvidence(row.android_test_evidence)) {
+        fail(
+          row,
+          header,
+          rows,
+          "Android device test evidence missing.",
+          "Set android_test_evidence (tester/device/OS/date/result) after human device testing.",
+        );
+      }
+      break;
+    }
     case "asc_submission_status": {
       if (!isNonEmpty(row.ipa_path) || !existsFile(row.ipa_path)) {
         fail(
@@ -278,6 +322,8 @@ function validateAndRepair(row, header, rows) {
       const prereqStatuses = [
         "build_ios_ipa_status",
         "build_android_aab_status",
+        "test_ios_device_status",
+        "test_android_device_status",
         "asc_submission_status",
         "gplay_submission_status",
         "ci_pipeline_status",

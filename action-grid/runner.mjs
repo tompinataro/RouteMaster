@@ -13,6 +13,8 @@ const CSV_PATH = path.join(__dirname, "projects.csv");
 const EXECUTABLE_STATUS_COLUMNS = [
   "build_ios_ipa_status",
   "build_android_aab_status",
+  "test_ios_device_status",
+  "test_android_device_status",
   "asc_submission_status",
   "gplay_submission_status",
   "ci_pipeline_status",

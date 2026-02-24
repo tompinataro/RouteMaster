@@ -24,6 +24,8 @@ const POLL_RETRY_DELAY_MS = 1_000;
 const EXECUTABLE_STATUS_COLUMNS = [
   "build_ios_ipa_status",
   "build_android_aab_status",
+  "test_ios_device_status",
+  "test_android_device_status",
   "asc_submission_status",
   "gplay_submission_status",
   "ci_pipeline_status",
@@ -365,6 +367,8 @@ function formatProjectSummary(projectRaw) {
     "repo_path",
     "ipa_path",
     "aab_path",
+    "ios_test_evidence",
+    "android_test_evidence",
     "asc_app_id",
     "asc_build_number",
     "asc_submission_evidence",
@@ -426,7 +430,7 @@ function formatPortfolioStatus() {
   for (const row of rows) {
     const project = String(row.project ?? "").trim() || "(unknown)";
     lines.push(
-      `${project} | overall=${String(row.row_overall_status ?? "").trim() || "(blank)"} | permission=${String(row.next_row_permission ?? "").trim() || "(blank)"} | ios=${String(row.build_ios_ipa_status ?? "").trim() || "(blank)"} | android=${String(row.build_android_aab_status ?? "").trim() || "(blank)"} | asc=${String(row.asc_submission_status ?? "").trim() || "(blank)"} | gplay=${String(row.gplay_submission_status ?? "").trim() || "(blank)"} | ci=${String(row.ci_pipeline_status ?? "").trim() || "(blank)"} | release=${String(row.release_ready_status ?? "").trim() || "(blank)"}`,
+      `${project} | overall=${String(row.row_overall_status ?? "").trim() || "(blank)"} | permission=${String(row.next_row_permission ?? "").trim() || "(blank)"} | ios=${String(row.build_ios_ipa_status ?? "").trim() || "(blank)"} | android=${String(row.build_android_aab_status ?? "").trim() || "(blank)"} | ios_test=${String(row.test_ios_device_status ?? "").trim() || "(blank)"} | android_test=${String(row.test_android_device_status ?? "").trim() || "(blank)"} | asc=${String(row.asc_submission_status ?? "").trim() || "(blank)"} | gplay=${String(row.gplay_submission_status ?? "").trim() || "(blank)"} | ci=${String(row.ci_pipeline_status ?? "").trim() || "(blank)"} | release=${String(row.release_ready_status ?? "").trim() || "(blank)"}`,
     );
   }
 
@@ -440,7 +444,9 @@ function formatHelpText() {
     "Headings:",
     "- overall = row_overall_status (READY/RUNNING/BLOCKED/DONE)",
     "- permission = next_row_permission (GO/PAUSE)",
-    "- ios/android/ci = build and pipeline task statuses",
+    "- ios/android = build artifact task statuses",
+    "- ios_test/android_test = real device validation task statuses",
+    "- ci = CI pipeline task status",
     "- asc/gplay = store submission task statuses",
     "",
     "Commands:",
