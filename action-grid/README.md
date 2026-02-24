@@ -146,6 +146,7 @@ npm run -s action-grid:sheet-sync
 This always writes:
 
 - `action-grid/tracker-view.csv`
+- `action-grid/tracker-view.html` (local colorized view)
 
 Optional live Google Sheets sync (same command):
 
@@ -158,6 +159,9 @@ Setup note:
 
 - share the target Google Sheet with `GOOGLE_SERVICE_ACCOUNT_EMAIL` as an editor
 - for private key in `.env`, use either literal newlines or `\n` escapes
+- sync applies fills:
+  - green on `DONE`
+  - yellow on `PAUSE`, `READY`, and `PENDING`
 
 ## How Tom Runs This While Traveling
 
