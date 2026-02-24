@@ -349,8 +349,10 @@ function formatProjectSummary(projectRaw) {
     "aab_path",
     "asc_app_id",
     "asc_build_number",
+    "asc_submission_evidence",
     "gplay_package_name",
     "gplay_version_code",
+    "gplay_submission_evidence",
     "audit_repo_hygiene_notes",
   ].filter((field) => header.includes(field));
 

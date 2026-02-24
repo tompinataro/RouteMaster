@@ -60,9 +60,9 @@ Common unblock actions:
 - `build_android_aab_status` blocked:
   - build an `.aab` and set `aab_path`
 - `asc_submission_status` blocked:
-  - ensure `ipa_path` exists, then fill `asc_app_id` and `asc_build_number`
+  - ensure `ipa_path` exists, then fill `asc_app_id`, `asc_build_number`, and `asc_submission_evidence`
 - `gplay_submission_status` blocked:
-  - ensure `aab_path` exists, then fill `gplay_package_name` and `gplay_version_code`
+  - ensure `aab_path` exists, then fill `gplay_package_name`, `gplay_version_code`, and `gplay_submission_evidence`
 - `ci_pipeline_status` blocked:
   - ensure repo has `.github/workflows` and `repo_path` points to the correct root
 - `release_ready_status` blocked:
@@ -146,6 +146,8 @@ Log file:
      - `SET routemaster ipa_path /Users/tom/.../build.ipa`
      - `SET routemaster asc_app_id 1234567890`
      - `SET routemaster asc_build_number 42`
+     - `SET routemaster asc_submission_evidence https://appstoreconnect.apple.com/...`
+     - `SET routemaster gplay_submission_evidence https://play.google.com/console/...`
      - `SET routemaster asc_submission_status READY`
      - bot applies update to `projects.csv` and replies with confirmation
    - reply `SHOW <project>` (example: `SHOW pool-steward`):
@@ -153,7 +155,7 @@ Log file:
        - `row_overall_status`, `next_row_permission`
        - all `*_status` values
        - populated `*_completed_at` timestamps
-       - key metadata fields (`repo_path`, artifact paths, IDs, etc.)
+       - key metadata fields (`repo_path`, artifact paths, IDs, submission evidence, etc.)
    - reply `NO`:
      - bot ACK: `⏸️ Paused — no new project started.`
      - no row changes
