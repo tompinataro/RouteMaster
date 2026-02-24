@@ -89,14 +89,22 @@ function runLifecycleTask(row, statusColumn) {
 
   const result = spawnSync(executor, {
     shell: true,
-    stdio: "inherit",
+    stdio: "pipe",
     env,
+    encoding: "utf8",
   });
 
+  const out = String(result.stdout ?? "").trim();
+  const err = String(result.stderr ?? "").trim();
+  if (out) process.stdout.write(`${out}\n`);
+  if (err) process.stderr.write(`${err}\n`);
+
   if (result.status !== 0) {
+    const detail = err || out;
+    const firstLine = detail ? detail.split(/\r?\n/)[0] : "";
     return {
       ok: false,
-      reason: `Executor failed with exit code ${result.status ?? "unknown"}.`,
+      reason: `Executor failed with exit code ${result.status ?? "unknown"}${firstLine ? `: ${firstLine}` : ""}`,
     };
   }
   return { ok: true, reason: "" };

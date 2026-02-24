@@ -1,0 +1,37 @@
+{
+  "project": "Pull-tab box tracking mobile app — low-fidelity wireframes",
+  "lastUpdateLocal": "2026-02-03T18:00:00-06:00",
+  "phase": "wireframing",
+  "completionCriteria": "First-pass low-fi wireframes completed for all required screens + audit log event requirements documented.",
+  "progress": {
+    "discovery": {"done": false, "notes": ""},
+    "iaAndNavigation": {"done": false, "notes": ""},
+    "wireframes": {
+      "Login": "not_started",
+      "Dashboard": "not_started",
+      "Venue list": "not_started",
+      "Venue detail": "not_started",
+      "Scan flow (scan + assign venue)": "not_started",
+      "Inventory list": "not_started",
+      "Game detail (inventory)": "not_started",
+      "Initialize game": "not_started",
+      "Game detail (live) tabs: Deposits/Prizes/Summary": "not_started",
+      "Add deposit modal": "not_started",
+      "Add prize modal": "not_started",
+      "Close game wizard": "not_started",
+      "Report view": "not_started",
+      "Reports list + filters": "not_started",
+      "Settings + sync status": "not_started"
+    },
+    "auditLogEvents": "not_started"
+  },
+  "openQuestions": [
+    "Barcode type/format and whether scanning can occur without network lookup",
+    "Whether games can be reopened after Close (and who can do it)",
+    "Conflict strategy for offline edits (last-write-wins vs explicit resolve UI)"
+  ],
+  "eta": {
+    "firstPassWireframes": "2026-02-06",
+    "revisionsAfterReview": "2026-02-10"
+  }
+}
