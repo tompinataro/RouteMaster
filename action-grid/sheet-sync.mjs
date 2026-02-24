@@ -70,11 +70,25 @@ function deriveNotes(row) {
   return "";
 }
 
+function canonicalProjectKey(value) {
+  return clean(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
 function sortRows(rows) {
-  const rank = { RUNNING: 0, READY: 1, BLOCKED: 2, DONE: 3, BACKLOG: 4 };
+  const preferred = [
+    "routemaster",
+    "bloomsteward",
+    "poolsteward",
+    "pulltabvalet",
+    "dvdvalet",
+  ];
+  const rank = new Map(preferred.map((key, index) => [key, index]));
+
   return [...rows].sort((a, b) => {
-    const ar = rank[normalize(a.row_overall_status)] ?? 9;
-    const br = rank[normalize(b.row_overall_status)] ?? 9;
+    const ak = canonicalProjectKey(a.project);
+    const bk = canonicalProjectKey(b.project);
+    const ar = rank.has(ak) ? rank.get(ak) : Number.MAX_SAFE_INTEGER;
+    const br = rank.has(bk) ? rank.get(bk) : Number.MAX_SAFE_INTEGER;
     if (ar !== br) return ar - br;
     return clean(a.project).localeCompare(clean(b.project));
   });
