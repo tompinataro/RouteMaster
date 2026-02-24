@@ -47,6 +47,10 @@ function normalize(value) {
   return String(value ?? "").trim().toUpperCase();
 }
 
+function shellQuote(value) {
+  return `'${String(value ?? "").replace(/'/g, `'\"'\"'`)}'`;
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -246,6 +250,20 @@ function forceProjectReadyGo(projectNameRaw) {
   return { ok: true, reason: "", project: rows[targetIndex].project ?? projectName };
 }
 
+function resolveProjectName(projectNameRaw) {
+  const projectName = String(projectNameRaw ?? "").trim();
+  if (!projectName) return { ok: false, reason: "Project name is empty.", project: "" };
+
+  const { rows } = readCsv(CSV_PATH);
+  const row = rows.find(
+    (r) => String(r.project ?? "").trim().toLowerCase() === projectName.toLowerCase(),
+  );
+  if (!row) {
+    return { ok: false, reason: `Project not found: ${projectName}`, project: "" };
+  }
+  return { ok: true, reason: "", project: row.project ?? projectName };
+}
+
 function normalizeSetValue(valueRaw) {
   const raw = String(valueRaw ?? "").trim();
   if (
@@ -427,6 +445,7 @@ function formatHelpText() {
     "",
     "Commands:",
     "- STATUS",
+    "- VERIFY <project>",
     "- SHOW <project>",
     "- RUN <project>",
     "- SET <project> <field> <value>",
@@ -455,6 +474,8 @@ function runRunnerOnce(reason) {
       stdio: ["ignore", "pipe", "pipe"],
     });
 
+    let stdout = "";
+    let stderr = "";
     let settled = false;
     const finish = (outcome) => {
       if (settled) return;
@@ -466,29 +487,88 @@ function runRunnerOnce(reason) {
 
     child.stdout.on("data", (chunk) => {
       const text = String(chunk).trimEnd();
+      stdout += String(chunk);
       if (text) log(`runner stdout: ${text}`);
     });
     child.stderr.on("data", (chunk) => {
       const text = String(chunk).trimEnd();
+      stderr += String(chunk);
       if (text) log(`runner stderr: ${text}`);
     });
 
     child.on("error", (err) => {
       log(`runner spawn error: ${err?.message ?? String(err)}`);
-      finish({ code: 127, signal: null });
+      finish({ code: 127, signal: null, stdout, stderr: `${stderr}\n${err?.message ?? String(err)}`.trim() });
     });
 
     child.on("exit", (code, signal) => {
       log(`runner exit code=${code ?? "null"} signal=${signal ?? "null"}`);
-      finish({ code: code ?? null, signal: signal ?? null });
+      finish({ code: code ?? null, signal: signal ?? null, stdout, stderr });
     });
   });
 }
 
-function queueRunner(reason) {
-  const runPromise = runnerChain.then(() => runRunnerOnce(reason));
-  runnerChain = runPromise.catch(() => ({ code: -1, signal: null }));
+function runVerifierOnce(project, reason) {
+  return new Promise((resolve) => {
+    const verifierCommand = (process.env.ACTION_GRID_VERIFIER ?? "node action-grid/verify-submissions.mjs").trim();
+    const fullCommand = `${verifierCommand} ${shellQuote(project)}`;
+    const child = spawn(fullCommand, {
+      cwd: REPO_ROOT,
+      env: {
+        ...process.env,
+        ACTION_GRID_PROJECT: project,
+        ACTION_GRID_CSV_PATH: CSV_PATH,
+      },
+      shell: true,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    let stderr = "";
+    let settled = false;
+    const finish = (outcome) => {
+      if (settled) return;
+      settled = true;
+      resolve(outcome);
+    };
+
+    log(`verifier start (${reason}) cmd=${fullCommand} pid=${child.pid ?? "n/a"}`);
+
+    child.stdout.on("data", (chunk) => {
+      const text = String(chunk).trimEnd();
+      stdout += String(chunk);
+      if (text) log(`verifier stdout: ${text}`);
+    });
+    child.stderr.on("data", (chunk) => {
+      const text = String(chunk).trimEnd();
+      stderr += String(chunk);
+      if (text) log(`verifier stderr: ${text}`);
+    });
+
+    child.on("error", (err) => {
+      log(`verifier spawn error: ${err?.message ?? String(err)}`);
+      finish({ code: 127, signal: null, stdout, stderr: `${stderr}\n${err?.message ?? String(err)}`.trim() });
+    });
+
+    child.on("exit", (code, signal) => {
+      log(`verifier exit code=${code ?? "null"} signal=${signal ?? "null"}`);
+      finish({ code: code ?? null, signal: signal ?? null, stdout, stderr });
+    });
+  });
+}
+
+function queueSerial(taskFactory) {
+  const runPromise = runnerChain.then(() => taskFactory());
+  runnerChain = runPromise.catch(() => ({ code: -1, signal: null, stdout: "", stderr: "" }));
   return runPromise;
+}
+
+function queueRunner(reason) {
+  return queueSerial(() => runRunnerOnce(reason));
+}
+
+function queueVerifier(project, reason) {
+  return queueSerial(() => runVerifierOnce(project, reason));
 }
 
 function runnerOutcomeText(outcome) {
@@ -502,6 +582,23 @@ function runnerOutcomeText(outcome) {
 async function runNowAndReport(chatId, reason) {
   const outcome = await queueRunner(reason);
   await sendTelegramMessage(runnerOutcomeText(outcome), chatId);
+}
+
+function verifierOutcomeText(project, outcome) {
+  const stdoutLine = String(outcome?.stdout ?? "").trim().split(/\r?\n/).filter(Boolean)[0] ?? "";
+  const stderrLine = String(outcome?.stderr ?? "").trim().split(/\r?\n/).filter(Boolean)[0] ?? "";
+  if (outcome?.code === 0) {
+    return `✅ VERIFY complete for ${project}\n${stdoutLine || "Submission evidence refreshed."}`;
+  }
+  if (outcome?.signal) {
+    return `❌ VERIFY failed for ${project} (signal ${outcome.signal})${stderrLine ? `\n${stderrLine}` : ""}`;
+  }
+  return `❌ VERIFY failed for ${project} (exit ${outcome?.code ?? "unknown"})${stderrLine ? `\n${stderrLine}` : ""}`;
+}
+
+async function runVerifyAndReport(chatId, project, reason) {
+  const outcome = await queueVerifier(project, reason);
+  await sendTelegramMessage(verifierOutcomeText(project, outcome), chatId);
 }
 
 async function handleTelegramMessage(textRaw, chatId) {
@@ -518,6 +615,20 @@ async function handleTelegramMessage(textRaw, chatId) {
     const summary = formatPortfolioStatus();
     log("STATUS -> portfolio summary");
     await sendTelegramMessage(summary.message, chatId);
+    return;
+  }
+
+  const verifyMatch = text.match(/^\s*VERIFY\s+(.+?)\s*$/i);
+  if (verifyMatch) {
+    const resolved = resolveProjectName(verifyMatch[1]);
+    if (!resolved.ok) {
+      log(`VERIFY -> rejected (${resolved.reason})`);
+      await sendTelegramMessage(`❌ ${resolved.reason}`, chatId);
+      return;
+    }
+    log(`VERIFY -> ${resolved.project}`);
+    await sendTelegramMessage(`🔎 VERIFY received — checking submissions for ${resolved.project}…`, chatId);
+    await runVerifyAndReport(chatId, resolved.project, `telegram-verify-${resolved.project}`);
     return;
   }
 

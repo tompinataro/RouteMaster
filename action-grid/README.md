@@ -112,6 +112,7 @@ It owns both loops:
 - row snapshot query on Telegram `SHOW <project>`
 - all-project status summary on Telegram `STATUS`
 - quick command/field guide on Telegram `HELP`
+- hard submission verification on Telegram `VERIFY <project>`
 
 Control:
 
@@ -131,6 +132,7 @@ Log file:
    - `TELEGRAM_BOT_TOKEN`
    - `TELEGRAM_CHAT_ID`
    - `ACTION_GRID_EXECUTOR`
+   - `EXPO_TOKEN` (required for `VERIFY <project>`)
 2. Start daemon:
    - `npm run action-grid:up`
 3. Check health quickly:
@@ -158,6 +160,10 @@ Log file:
        - all `*_status` values
        - populated `*_completed_at` timestamps
        - key metadata fields (`repo_path`, artifact paths, IDs, submission evidence, etc.)
+   - reply `VERIFY <project>` (example: `VERIFY bloom-steward`):
+     - bot queries Expo submission records for that project
+     - writes hard evidence to `asc_submission_evidence` / `gplay_submission_evidence`
+     - updates ASC/Google Play statuses based on verified `FINISHED` submissions
    - reply `STATUS`:
      - bot replies with all project rows and lifecycle progress in one summary
    - reply `HELP` (or `?`):
