@@ -22,6 +22,14 @@ const EXECUTABLE_STATUS_COLUMNS = [
   "ci_pipeline_status",
   "release_ready_status",
 ];
+const PROJECT_ALIASES = {
+  rm: "routemaster",
+  bs: "bloomsteward",
+  ps: "poolsteward",
+  ptv: "pulltabvalet",
+  dvd: "dvdvalet",
+  dv: "dvdvalet",
+};
 
 function clean(value) {
   return String(value ?? "").trim();
@@ -33,6 +41,32 @@ function normalize(value) {
 
 function canonical(value) {
   return clean(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function projectByCanonical(rows, canon) {
+  return rows.find((row) => canonical(row.project) === canon) ?? null;
+}
+
+function resolveProjectToken(rows, tokenRaw) {
+  const token = canonical(tokenRaw);
+  if (!token) return null;
+
+  const alias = PROJECT_ALIASES[token];
+  if (alias) {
+    const byAlias = projectByCanonical(rows, alias);
+    if (byAlias) return byAlias;
+  }
+
+  const exact = projectByCanonical(rows, token);
+  if (exact) return exact;
+
+  const partial = rows.filter((row) => {
+    const key = canonical(row.project);
+    return key.includes(token) || token.includes(key);
+  });
+  if (partial.length === 1) return partial[0];
+
+  return null;
 }
 
 function existsFile(filePath) {
@@ -91,6 +125,11 @@ function findProjectByMention(rows, taskText) {
   for (const row of rows) {
     const key = canonical(row.project);
     if (key && canonTask.includes(key)) return row;
+  }
+  const tokens = clean(taskText).toLowerCase().match(/[a-z0-9_-]+/g) ?? [];
+  for (const token of tokens) {
+    const resolved = resolveProjectToken(rows, token);
+    if (resolved) return resolved;
   }
   return null;
 }
@@ -210,7 +249,26 @@ function projectSummary(row) {
   );
 }
 
-function buildResponse(rows, taskText) {
+function ascIpaConsistencyReply(row) {
+  const project = clean(row.project);
+  const ascDone = normalize(row.asc_submission_status) === "DONE";
+  const ipaExists = existsFile(row.ipa_path);
+  const ipaPath = clean(row.ipa_path);
+  if (!ascDone) {
+    return `${project}: ASC submission is not DONE, so .ipa can legitimately be N.`;
+  }
+  if (!ipaExists) {
+    return (
+      `${project}: This is expected with current logic.\n` +
+      `ASC=Done means a historical successful submission is recorded.\n` +
+      `.ipa=N means the current local ipa_path file is missing or empty.\n` +
+      `Current ipa_path: ${ipaPath || "(blank)"}`
+    );
+  }
+  return `${project}: ASC is DONE and a local IPA exists, so .ipa should be Y after SHEET refresh.`;
+}
+
+function buildResponse(rows, taskText, mode = "TASK") {
   const commands = [];
   const text = clean(taskText);
   const lower = text.toLowerCase();
@@ -220,22 +278,22 @@ function buildResponse(rows, taskText) {
 
   const runMatch = text.match(/\brun\s+([a-z0-9_-]+)/i);
   if (runMatch) {
-    const wanted = rows.find((row) => canonical(row.project) === canonical(runMatch[1]));
+    const wanted = resolveProjectToken(rows, runMatch[1]);
     if (wanted && !firstBlockedStatus(wanted)) {
       addUnique(commands, `RUN ${clean(wanted.project)}`);
     }
   }
   const showMatch = text.match(/\bshow\s+([a-z0-9_-]+)/i);
   if (showMatch) {
-    const wanted = rows.find((row) => canonical(row.project) === canonical(showMatch[1]));
-    addUnique(commands, `SHOW ${clean(wanted?.project || showMatch[1])}`);
+    const wanted = resolveProjectToken(rows, showMatch[1]);
+    if (wanted) addUnique(commands, `SHOW ${clean(wanted.project)}`);
   }
   const verifyMatch = text.match(/\bverify\s+([a-z0-9_-]+)/i);
   if (verifyMatch) {
-    const wanted = rows.find((row) => canonical(row.project) === canonical(verifyMatch[1]));
-    addUnique(commands, `VERIFY ${clean(wanted?.project || verifyMatch[1])}`);
+    const wanted = resolveProjectToken(rows, verifyMatch[1]);
+    if (wanted) addUnique(commands, `VERIFY ${clean(wanted.project)}`);
   }
-  if (/\b(sheet|sync sheet|dashboard|grid)\b/i.test(lower)) addUnique(commands, "SHEET");
+  if (/\b(sheet|sync sheet|dashboard)\b/i.test(lower)) addUnique(commands, "SHEET");
   if (/\b(next project|continue|go next)\b/i.test(lower)) addUnique(commands, "YES");
   if (/^\s*status\b/i.test(text) || /\bportfolio\b/i.test(lower)) addUnique(commands, "STATUS");
 
@@ -257,6 +315,9 @@ function buildResponse(rows, taskText) {
   }
 
   let reply = "";
+  if (projectRow && /\basc\b/i.test(lower) && /\bipa\b/i.test(lower) && /\b(how|why|inconsisten|n)\b/i.test(lower)) {
+    reply = ascIpaConsistencyReply(projectRow);
+  } else
   if (projectRow) {
     reply = `Tixpy task analysis:\n${projectSummary(projectRow)}`;
     if (blocked && !unblockCommands(projectRow).length) {
@@ -273,11 +334,15 @@ function buildResponse(rows, taskText) {
       "I can help with project actions. Try: TASK run routemaster, TASK unblock dvd_valet, ASK what is next for bloom-steward, or ASK status of all projects.";
   }
 
+  if (normalize(mode) === "ASK") {
+    return { reply, commands: [] };
+  }
   return { reply, commands };
 }
 
 function main() {
   const taskText = clean(process.env.ACTION_GRID_TASK_TEXT || process.argv.slice(2).join(" "));
+  const mode = normalize(process.env.ACTION_GRID_TASK_MODE || "TASK");
   const { rows } = readCsv(CSV_PATH);
 
   if (!taskText) {
@@ -290,7 +355,7 @@ function main() {
     return;
   }
 
-  const result = buildResponse(rows, taskText);
+  const result = buildResponse(rows, taskText, mode);
   process.stdout.write(JSON.stringify(result));
 }
 

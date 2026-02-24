@@ -216,7 +216,7 @@ Optional task delegation controls:
      - bot regenerates `action-grid/tracker-view.csv`
      - if Google Sheet env vars are configured, bot syncs the tracker tab
    - reply `ASK <message>`:
-     - bot answers using Action Grid context without executing commands
+     - bot answers using Action Grid context without executing any commands
    - reply `TASK <message>`:
      - bot analyzes request and may auto-run safe delegated commands (`RUN`, `SHOW`, `VERIFY`, `SHEET`, etc.)
    - reply `HELP` (or `?`):

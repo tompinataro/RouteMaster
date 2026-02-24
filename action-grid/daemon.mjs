@@ -624,7 +624,7 @@ function runSheetSyncOnce(reason) {
   });
 }
 
-function runTaskExecutorOnce(taskText, reason) {
+function runTaskExecutorOnce(taskText, reason, mode = "TASK") {
   return new Promise((resolve) => {
     const command = (process.env.ACTION_GRID_TASK_EXECUTOR ?? "node action-grid/task-executor.mjs").trim();
     const child = spawn(command, {
@@ -632,6 +632,7 @@ function runTaskExecutorOnce(taskText, reason) {
       env: {
         ...process.env,
         ACTION_GRID_TASK_TEXT: taskText,
+        ACTION_GRID_TASK_MODE: mode,
         ACTION_GRID_CSV_PATH: CSV_PATH,
       },
       shell: true,
@@ -690,8 +691,8 @@ function queueSheetSync(reason) {
   return queueSerial(() => runSheetSyncOnce(reason));
 }
 
-function queueTaskExecutor(taskText, reason) {
-  return queueSerial(() => runTaskExecutorOnce(taskText, reason));
+function queueTaskExecutor(taskText, reason, mode) {
+  return queueSerial(() => runTaskExecutorOnce(taskText, reason, mode));
 }
 
 function runnerOutcomeText(outcome) {
@@ -799,8 +800,8 @@ async function executeTaskCommands(chatId, commands, reason) {
   }
 }
 
-async function runTaskExecutorAndReport(chatId, taskText, reason, allowAutoCommands) {
-  const outcome = await queueTaskExecutor(taskText, reason);
+async function runTaskExecutorAndReport(chatId, taskText, reason, allowAutoCommands, mode) {
+  const outcome = await queueTaskExecutor(taskText, reason, mode);
   const parsed = parseTaskExecutorOutput(outcome);
   await sendTelegramMessage(taskExecutorOutcomeText(outcome, parsed), chatId);
   if (allowAutoCommands && outcome?.code === 0 && parsed.commands.length) {
@@ -856,7 +857,13 @@ async function handleTelegramMessage(textRaw, chatId) {
         : "🧠 ASK received — thinking with Action Grid context…",
       chatId,
     );
-    await runTaskExecutorAndReport(chatId, taskText, `telegram-${mode.toLowerCase()}`, mode === "TASK");
+    await runTaskExecutorAndReport(
+      chatId,
+      taskText,
+      `telegram-${mode.toLowerCase()}`,
+      mode === "TASK",
+      mode,
+    );
     return;
   }
 
