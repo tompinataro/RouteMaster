@@ -41,12 +41,17 @@ function hasEvidence(value) {
   return true;
 }
 
-function hasArtifactPath(value) {
-  const raw = clean(value);
+function hasRepoArtifact(row, key) {
+  const raw = clean(row?.[key]);
+  const repo = clean(row?.repo_path);
   if (!raw) return false;
+  if (!repo) return false;
   if (/REPLACE_WITH_REAL_PATH/i.test(raw)) return false;
   try {
-    return fs.existsSync(raw);
+    if (!fs.existsSync(raw)) return false;
+    const relative = path.relative(repo, raw);
+    if (!relative) return true;
+    return !relative.startsWith("..") && !path.isAbsolute(relative);
   } catch {
     return false;
   }
@@ -103,9 +108,9 @@ function toTrackerRows(rows) {
     "Project Name": clean(row.project),
     Overall: clean(row.row_overall_status),
     Permission: clean(row.next_row_permission),
-    Repo: hasArtifactPath(row.repo_path) ? "Y" : "N",
-    "Local .ipa": hasArtifactPath(row.ipa_path) ? "Y" : "N",
-    "Local .aab": hasArtifactPath(row.aab_path) ? "Y" : "N",
+    Repo: hasRepoArtifact(row, "repo_path") ? "Y" : "N",
+    "Local .ipa": hasRepoArtifact(row, "ipa_path") ? "Y" : "N",
+    "Local .aab": hasRepoArtifact(row, "aab_path") ? "Y" : "N",
     "iOS Test": clean(row.test_ios_device_status),
     "Android Test": clean(row.test_android_device_status),
     "ASC Submit": clean(row.asc_submission_status),
