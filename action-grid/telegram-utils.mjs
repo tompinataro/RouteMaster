@@ -7,7 +7,12 @@ export async function sendTelegramMessage(text, chatIdOverride = null) {
     const resp = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text }),
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        disable_web_page_preview: true,
+        link_preview_options: { is_disabled: true },
+      }),
     });
     return resp.ok;
   } catch {
