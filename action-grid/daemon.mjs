@@ -688,6 +688,17 @@ async function handleTelegramMessage(textRaw, chatId) {
   const text = String(textRaw ?? "");
   log(`telegram message received: ${text}`);
 
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (lines.length > 1) {
+    for (const line of lines) {
+      await handleTelegramMessage(line, chatId);
+    }
+    return;
+  }
+
   if (/^\s*(HELP|\?)\s*$/i.test(text)) {
     log("HELP -> command summary");
     await sendTelegramMessage(formatHelpText(), chatId);
