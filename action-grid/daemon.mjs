@@ -463,6 +463,8 @@ function formatHelpText() {
     "Commands:",
     "- STATUS",
     "- SHEET",
+    "- ASK <message>",
+    "- TASK <message>",
     "- VERIFY <project>",
     "- SHOW <project>",
     "- RUN <project>",
@@ -473,6 +475,8 @@ function formatHelpText() {
     "Examples:",
     "- SHOW pool-steward",
     "- SHEET",
+    "- ASK what's next for bloom-steward?",
+    "- TASK unblock dvd_valet and run it",
     "- RUN routemaster",
     "- SET routemaster asc_submission_evidence https://appstoreconnect.apple.com/...",
     "- SET routemaster gplay_submission_evidence https://play.google.com/console/...",
@@ -620,6 +624,54 @@ function runSheetSyncOnce(reason) {
   });
 }
 
+function runTaskExecutorOnce(taskText, reason) {
+  return new Promise((resolve) => {
+    const command = (process.env.ACTION_GRID_TASK_EXECUTOR ?? "node action-grid/task-executor.mjs").trim();
+    const child = spawn(command, {
+      cwd: REPO_ROOT,
+      env: {
+        ...process.env,
+        ACTION_GRID_TASK_TEXT: taskText,
+        ACTION_GRID_CSV_PATH: CSV_PATH,
+      },
+      shell: true,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    let stderr = "";
+    let settled = false;
+    const finish = (outcome) => {
+      if (settled) return;
+      settled = true;
+      resolve(outcome);
+    };
+
+    log(`task-executor start (${reason}) cmd=${command} pid=${child.pid ?? "n/a"}`);
+
+    child.stdout.on("data", (chunk) => {
+      const text = String(chunk).trimEnd();
+      stdout += String(chunk);
+      if (text) log(`task-executor stdout: ${text}`);
+    });
+    child.stderr.on("data", (chunk) => {
+      const text = String(chunk).trimEnd();
+      stderr += String(chunk);
+      if (text) log(`task-executor stderr: ${text}`);
+    });
+
+    child.on("error", (err) => {
+      log(`task-executor spawn error: ${err?.message ?? String(err)}`);
+      finish({ code: 127, signal: null, stdout, stderr: `${stderr}\n${err?.message ?? String(err)}`.trim() });
+    });
+
+    child.on("exit", (code, signal) => {
+      log(`task-executor exit code=${code ?? "null"} signal=${signal ?? "null"}`);
+      finish({ code: code ?? null, signal: signal ?? null, stdout, stderr });
+    });
+  });
+}
+
 function queueSerial(taskFactory) {
   const runPromise = runnerChain.then(() => taskFactory());
   runnerChain = runPromise.catch(() => ({ code: -1, signal: null, stdout: "", stderr: "" }));
@@ -636,6 +688,10 @@ function queueVerifier(project, reason) {
 
 function queueSheetSync(reason) {
   return queueSerial(() => runSheetSyncOnce(reason));
+}
+
+function queueTaskExecutor(taskText, reason) {
+  return queueSerial(() => runTaskExecutorOnce(taskText, reason));
 }
 
 function runnerOutcomeText(outcome) {
@@ -695,15 +751,74 @@ async function runSheetSyncAndReport(chatId, reason) {
   await sendTelegramMessage(sheetSyncOutcomeText(outcome), chatId);
 }
 
+function parseTaskExecutorOutput(outcome) {
+  const rawStdout = String(outcome?.stdout ?? "").trim();
+  if (!rawStdout) return { reply: "", commands: [] };
+  try {
+    const parsed = JSON.parse(rawStdout);
+    return {
+      reply: String(parsed?.reply ?? "").trim(),
+      commands: Array.isArray(parsed?.commands)
+        ? parsed.commands.map((x) => String(x ?? "").trim()).filter(Boolean)
+        : [],
+    };
+  } catch {
+    return { reply: rawStdout, commands: [] };
+  }
+}
+
+function taskExecutorOutcomeText(outcome, parsed) {
+  if (outcome?.code === 0) {
+    return parsed.reply || "✅ Task processed.";
+  }
+  if (outcome?.signal) {
+    return `❌ TASK failed (signal ${outcome.signal}).`;
+  }
+  const stderrLine =
+    String(outcome?.stderr ?? "")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .find(Boolean) ?? "";
+  return `❌ TASK failed (exit ${outcome?.code ?? "unknown"})${stderrLine ? `\n${stderrLine}` : ""}`;
+}
+
+function taskAutoRunEnabled() {
+  const raw = normalize(process.env.ACTION_GRID_TASK_AUTORUN ?? "TRUE");
+  return raw !== "FALSE" && raw !== "0" && raw !== "NO";
+}
+
+async function executeTaskCommands(chatId, commands, reason) {
+  if (!taskAutoRunEnabled()) return;
+  const capped = commands.slice(0, 10);
+  for (const command of capped) {
+    if (!command) continue;
+    if (/^\s*(ASK|TASK)\b/i.test(command)) continue;
+    log(`task-executor delegating command (${reason}): ${command}`);
+    await sendTelegramMessage(`🤖 TASK executing: ${command}`, chatId);
+    await handleTelegramMessage(command, chatId);
+  }
+}
+
+async function runTaskExecutorAndReport(chatId, taskText, reason, allowAutoCommands) {
+  const outcome = await queueTaskExecutor(taskText, reason);
+  const parsed = parseTaskExecutorOutput(outcome);
+  await sendTelegramMessage(taskExecutorOutcomeText(outcome, parsed), chatId);
+  if (allowAutoCommands && outcome?.code === 0 && parsed.commands.length) {
+    await executeTaskCommands(chatId, parsed.commands, reason);
+  }
+}
+
 async function handleTelegramMessage(textRaw, chatId) {
   const text = String(textRaw ?? "");
   log(`telegram message received: ${text}`);
 
+  const trimmed = text.trim();
+  const isTaskBlock = /^(ASK|TASK)\b/i.test(trimmed);
   const lines = text
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
-  if (lines.length > 1) {
+  if (lines.length > 1 && !isTaskBlock) {
     for (const line of lines) {
       await handleTelegramMessage(line, chatId);
     }
@@ -727,6 +842,21 @@ async function handleTelegramMessage(textRaw, chatId) {
     log("SHEET -> sync tracker");
     await sendTelegramMessage("📄 Syncing Action Grid tracker sheet now…", chatId);
     await runSheetSyncAndReport(chatId, "telegram-sheet-sync");
+    return;
+  }
+
+  const askMatch = text.match(/^\s*(ASK|TASK)\s+([\s\S]+?)\s*$/i);
+  if (askMatch) {
+    const mode = normalize(askMatch[1]);
+    const taskText = askMatch[2];
+    log(`${mode} -> ${taskText}`);
+    await sendTelegramMessage(
+      mode === "TASK"
+        ? "🧠 TASK received — routing to Tixpy orchestrator…"
+        : "🧠 ASK received — thinking with Action Grid context…",
+      chatId,
+    );
+    await runTaskExecutorAndReport(chatId, taskText, `telegram-${mode.toLowerCase()}`, mode === "TASK");
     return;
   }
 

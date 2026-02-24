@@ -120,6 +120,8 @@ It owns both loops:
 - row snapshot query on Telegram `SHOW <project>`
 - all-project status summary on Telegram `STATUS`
 - tracker sync on Telegram `SHEET`
+- conversational assistant mode on Telegram `ASK <message>`
+- delegated action mode on Telegram `TASK <message>`
 - quick command/field guide on Telegram `HELP`
 - hard submission verification on Telegram `VERIFY <project>`
 
@@ -163,6 +165,11 @@ Setup note:
   - green on `DONE`
   - yellow on `PAUSE`, `READY`, and `PENDING`
 
+Optional task delegation controls:
+
+- `ACTION_GRID_TASK_EXECUTOR` (default: `node action-grid/task-executor.mjs`)
+- `ACTION_GRID_TASK_AUTORUN` (`TRUE` by default; set to `FALSE` to disable auto-running delegated commands from `TASK`)
+
 ## How Tom Runs This While Traveling
 
 1. Set env vars once in shell profile or exported session:
@@ -171,6 +178,7 @@ Setup note:
    - `ACTION_GRID_EXECUTOR`
    - `EXPO_TOKEN` (required for `VERIFY <project>`)
    - `ACTION_GRID_GOOGLE_SHEET_ID` + Google service account vars (required for `SHEET`)
+   - optional: `ACTION_GRID_TASK_EXECUTOR` and `ACTION_GRID_TASK_AUTORUN`
 2. Start daemon:
    - `npm run action-grid:up`
 3. Check health quickly:
@@ -207,6 +215,10 @@ Setup note:
    - reply `SHEET`:
      - bot regenerates `action-grid/tracker-view.csv`
      - if Google Sheet env vars are configured, bot syncs the tracker tab
+   - reply `ASK <message>`:
+     - bot answers using Action Grid context without executing commands
+   - reply `TASK <message>`:
+     - bot analyzes request and may auto-run safe delegated commands (`RUN`, `SHOW`, `VERIFY`, `SHEET`, etc.)
    - reply `HELP` (or `?`):
      - bot replies with heading definitions and command examples
    - reply `NO`:
