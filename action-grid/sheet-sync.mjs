@@ -45,7 +45,11 @@ function hasArtifactPath(value) {
   const raw = clean(value);
   if (!raw) return false;
   if (/REPLACE_WITH_REAL_PATH/i.test(raw)) return false;
-  return true;
+  try {
+    return fs.existsSync(raw);
+  } catch {
+    return false;
+  }
 }
 
 function progressPercent(row) {
