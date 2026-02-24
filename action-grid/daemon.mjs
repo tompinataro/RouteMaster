@@ -415,6 +415,33 @@ function formatPortfolioStatus() {
   return { ok: true, message: lines.join("\n") };
 }
 
+function formatHelpText() {
+  const lines = [
+    "🧭 Action Grid help",
+    "",
+    "Headings:",
+    "- overall = row_overall_status (READY/RUNNING/BLOCKED/DONE)",
+    "- permission = next_row_permission (GO/PAUSE)",
+    "- ios/android/ci = build and pipeline task statuses",
+    "- asc/gplay = store submission task statuses",
+    "",
+    "Commands:",
+    "- STATUS",
+    "- SHOW <project>",
+    "- RUN <project>",
+    "- SET <project> <field> <value>",
+    "- YES",
+    "- NO",
+    "",
+    "Examples:",
+    "- SHOW pool-steward",
+    "- RUN routemaster",
+    "- SET routemaster asc_submission_evidence https://appstoreconnect.apple.com/...",
+    "- SET routemaster gplay_submission_evidence https://play.google.com/console/...",
+  ];
+  return lines.join("\n");
+}
+
 function runRunnerOnce(reason) {
   return new Promise((resolve) => {
     const npmBin =
@@ -480,6 +507,12 @@ async function runNowAndReport(chatId, reason) {
 async function handleTelegramMessage(textRaw, chatId) {
   const text = String(textRaw ?? "");
   log(`telegram message received: ${text}`);
+
+  if (/^\s*(HELP|\?)\s*$/i.test(text)) {
+    log("HELP -> command summary");
+    await sendTelegramMessage(formatHelpText(), chatId);
+    return;
+  }
 
   if (/^\s*STATUS(?:\s+ALL)?\s*$/i.test(text)) {
     const summary = formatPortfolioStatus();

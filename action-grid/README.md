@@ -111,6 +111,7 @@ It owns both loops:
 - immediate runner invocation on Telegram `YES`/`RUN <project>`
 - row snapshot query on Telegram `SHOW <project>`
 - all-project status summary on Telegram `STATUS`
+- quick command/field guide on Telegram `HELP`
 
 Control:
 
@@ -159,6 +160,8 @@ Log file:
        - key metadata fields (`repo_path`, artifact paths, IDs, submission evidence, etc.)
    - reply `STATUS`:
      - bot replies with all project rows and lifecycle progress in one summary
+   - reply `HELP` (or `?`):
+     - bot replies with heading definitions and command examples
    - reply `NO`:
      - bot ACK: `⏸️ Paused — no new project started.`
      - no row changes
