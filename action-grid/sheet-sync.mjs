@@ -180,10 +180,23 @@ function writeHtmlView(headers, trackerRows) {
     h1 { margin: 0 0 12px; font-size: 22px; }
     p { margin: 0 0 14px; color: #596273; }
     .table-scroll { overflow: auto; border: 1px solid #d7dce3; box-shadow: 0 8px 24px rgba(17,24,39,0.08); background: #fff; }
-    table { border-collapse: collapse; min-width: 1200px; width: max-content; background: #fff; }
-    th, td { border: 1px solid #d7dce3; padding: 8px 10px; text-align: left; font-size: 13px; }
-    th { background: #eef1f5; font-weight: 700; position: sticky; top: 0; z-index: 1; }
-    th:first-child, td:first-child { position: sticky; left: 0; z-index: 2; background: #fff; }
+    table { border-collapse: collapse; min-width: 980px; width: max-content; background: #fff; }
+    th, td { border: 1px solid #d7dce3; padding: 6px 8px; text-align: left; font-size: 12px; }
+    th {
+      background: #eef1f5;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      white-space: normal;
+      line-height: 1.15;
+      font-size: 11px;
+      min-width: 72px;
+      max-width: 92px;
+      word-break: break-word;
+    }
+    td { white-space: nowrap; }
+    th:first-child, td:first-child { position: sticky; left: 0; z-index: 2; background: #fff; min-width: 170px; max-width: 260px; }
     th:first-child { z-index: 3; background: #e6ebf3; }
     .cell-done { background: #ccf0cc; }
     .cell-pending { background: #fff2bf; }
