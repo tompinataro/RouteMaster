@@ -1,6 +1,12 @@
 {
   "expo": {
     "extra": {},
-    "slug": "routemaster"
+    "slug": "routemaster",
+    "android": {
+      "package": "com.pinataro.routemaster"
+    },
+    "ios": {
+      "bundleIdentifier": "com.pinataro.routemaster"
+    }
   }
 }
