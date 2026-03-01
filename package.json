@@ -66,6 +66,7 @@
     "action-grid:verify": "node action-grid/verify-submissions.mjs",
     "action-grid:sheet-sync": "node action-grid/sheet-sync.mjs",
     "action-grid:view": "node action-grid/sheet-sync.mjs",
+    "action-grid:show": "node action-grid/show-latest-html.mjs",
     "action-grid:task": "node action-grid/task-executor.mjs",
     "action-grid:tg-listener": "node action-grid/tg-listener.mjs",
     "action-grid:up": "node action-grid/control.mjs up",

@@ -156,6 +156,12 @@ Quick local refresh:
 npm run action-grid:view
 ```
 
+Open the latest Canopi-backed dashboard in your browser:
+
+```bash
+npm run action-grid:show
+```
+
 Optional live Google Sheets sync (same command):
 
 - `ACTION_GRID_GOOGLE_SHEET_ID` (required to enable remote sync)

@@ -8,3 +8,4 @@
   - `/Users/tompinataro/My Projects/Canopi/projects.csv`
   - `/Users/tompinataro/My Projects/Canopi/tracker-view.html`
 - Refresh the dashboard and Canopi mirrors with `npm run action-grid:view` from `/Users/tompinataro/clawd-openaiclawdbot`.
+- Open the latest mirrored HTML dashboard with `npm run action-grid:show`.

@@ -598,7 +598,7 @@ function writeHtmlView(headers, trackerRows, sourceRows) {
       <div class="hero-panel">
         <p class="eyebrow">Canonical Source: action-grid/projects.csv</p>
         <h1>Action Grid Tracker</h1>
-        <p class="meta">This dashboard is generated from the project CSV. Both <code>grid.html</code> and <code>action-grid/tracker-view.html</code> now come from the same renderer, so the HTML is a view layer, not a second source of truth.</p>
+        <p class="meta">This dashboard is generated from the project CSV and mirrored into Canopi, so the HTML stays a view layer rather than turning into a second source of truth.</p>
         <dl class="hero-grid">
           <div class="metric"><dt>Total Projects</dt><dd>${totalProjects}</dd></div>
           <div class="metric"><dt>Ready Queue</dt><dd>${readyProjects}</dd></div>
