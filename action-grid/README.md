@@ -148,7 +148,13 @@ npm run -s action-grid:sheet-sync
 This always writes:
 
 - `action-grid/tracker-view.csv`
-- `action-grid/tracker-view.html` (local colorized view)
+- `action-grid/tracker-view.html` (single local dashboard view)
+
+Quick local refresh:
+
+```bash
+npm run action-grid:view
+```
 
 Optional live Google Sheets sync (same command):
 
@@ -214,6 +220,7 @@ Optional task delegation controls:
      - bot replies with all project rows and lifecycle progress in one summary
    - reply `SHEET`:
      - bot regenerates `action-grid/tracker-view.csv`
+     - bot regenerates `action-grid/tracker-view.html`
      - if Google Sheet env vars are configured, bot syncs the tracker tab
    - reply `ASK <message>`:
      - bot answers using Action Grid context without executing any commands
