@@ -1,8 +1,8 @@
-# Bloom Steward — Privacy Policy
+# RouteMaster — Privacy Policy
 
 Last updated: 2025-09-10
 
-Bloom Steward respects your privacy. This policy explains what information we collect, how we use it, and your choices.
+RouteMaster respects your privacy. This policy explains what information we collect, how we use it, and your choices.
 
 Information We Collect
 - Account Information: Email address associated with your organization account.
@@ -24,12 +24,12 @@ Retention
 - Visit submissions are retained according to your organization’s policy. Diagnostic logs are retained only as needed to operate the service.
 
 Children’s Privacy
-- Bloom Steward is intended for use by professional field technicians and is not directed to children under 13.
+- RouteMaster is intended for use by professional field technicians and is not directed to children under 13.
 
 Your Choices
 - Location Permission: You can deny or revoke location access in your device settings; the app remains functional.
-- Account: For account changes or data requests, contact support.
+- Account and data deletion requests: use https://tompinataro.github.io/RouteMaster/support#account-deletion or contact support.
 
 Contact
-- Support: See our Support page at https://tompinataro.github.io/Bloom-Steward/support
+- Support: See our Support page at https://tompinataro.github.io/RouteMaster/support
 
