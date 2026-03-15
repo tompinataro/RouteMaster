@@ -5,7 +5,7 @@
 - Expo config links to projectId `280ba249-4601-4642-b9fd-81b14869ba5e` (`extra.eas.projectId`) and EAS CLI appVersionSource is set to `local`.
 - Local `android` folder generated via `npx expo prebuild --platform android` to mirror EAS native build layout (mobile/android/*), with a vendored `expo-module-gradle-plugin` wired in via `settings.gradle`.
 - Launcher, Play Store, and feature graphic assets live in `mobile/assets/` and match Play size requirements.
-- Privacy and support URLs are published at `https://tompinataro.github.io/Bloom-Steward/privacy` and `/support`.
+- Privacy and support URLs are published at `https://tompinataro.github.io/RouteMaster/privacy` and `/support`.
 - App metadata draft (`docs/release/APP_STORE_METADATA.md`) covers descriptions, keywords, and review notes you can reuse in Play Console.
 - Data safety answers prepared in `docs/release/APP_PRIVACY.md` and export compliance notes in `docs/release/COMPLIANCE_CHECKLIST.md`.
 

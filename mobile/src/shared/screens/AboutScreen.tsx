@@ -26,10 +26,10 @@ export default function AboutScreen({ navigation }: Props) {
       <Text style={styles.sub}>App v{version}</Text>
       {loading ? <ActivityIndicator /> : <Text style={styles.body}>{result ?? 'No result yet'}</Text>}
       <View style={{ height: 8 }} />
-      <Pressable onPress={() => Linking.openURL('https://example.com/support').catch(() => {})} accessibilityRole="link" accessibilityLabel="Open Support">
+      <Pressable onPress={() => Linking.openURL('https://tompinataro.github.io/RouteMaster/support').catch(() => {})} accessibilityRole="link" accessibilityLabel="Open Support">
         <Text style={styles.link}>Support</Text>
       </Pressable>
-      <Pressable onPress={() => Linking.openURL('https://example.com/privacy').catch(() => {})} accessibilityRole="link" accessibilityLabel="Open Privacy Policy">
+      <Pressable onPress={() => Linking.openURL('https://tompinataro.github.io/RouteMaster/privacy').catch(() => {})} accessibilityRole="link" accessibilityLabel="Open Privacy Policy">
         <Text style={styles.link}>Privacy Policy</Text>
       </Pressable>
       <Pressable onPress={() => navigation.navigate('DeleteAccount')} accessibilityRole="button" accessibilityLabel="Delete my account">

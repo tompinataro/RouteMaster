@@ -12,7 +12,7 @@ const CSV_PATH = path.join(__dirname, "projects.csv");
 const ENV_PATH = path.join(__dirname, ".env");
 const OUTPUT_PATH = path.join(__dirname, "tracker-view.csv");
 const OUTPUT_HTML_PATH = path.join(__dirname, "tracker-view.html");
-const CANOPI_DIR = "/Users/tompinataro/My Projects/Canopi";
+const CANOPI_DIR = "/Users/tompinataro/My Projects/Tixpy-Canopi/control";
 const CANOPI_PROJECTS_PATH = path.join(CANOPI_DIR, "projects.csv");
 const CANOPI_HTML_PATH = path.join(CANOPI_DIR, "tracker-view.html");
 

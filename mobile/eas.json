@@ -21,7 +21,7 @@
         "resourceClass": "m-medium"
       },
       "android": {
-        "gradleCommand": ":app:assembleRelease"
+        "gradleCommand": ":app:bundleRelease"
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.example.com"
@@ -41,6 +41,9 @@
     "production": {
       "developmentClient": false,
       "distribution": "store",
+      "android": {
+        "gradleCommand": ":app:bundleRelease"
+      },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.example.com",
         "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
@@ -54,6 +57,10 @@
   },
   "submit": {
     "production": {
+      "android": {
+        "serviceAccountKeyPath": "/Users/tompinataro/.secrets/bloom-steward-54198e4de0f4.json",
+        "track": "internal"
+      },
       "ios": {
         "ascAppId": "6759133476",
         "ascApiKeyPath": "/Users/tompinataro/My-Repos-VSCode/ASC/AuthKey_2L7M5JL9KC.p8",

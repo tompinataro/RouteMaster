@@ -3,16 +3,30 @@
     "name": "RouteMaster",
     "slug": "routemaster",
     "version": "1.2.2",
+    "icon": "./assets/icon.png",
     "assetBundlePatterns": [
       "assets/*"
     ],
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f2a66c"
+    },
     "runtimeVersion": "1.0.0",
     "updates": {},
     "ios": {
       "bundleIdentifier": "com.tixpy.routemaster"
     },
     "android": {
-      "package": "com.tixpy.routemaster"
+      "package": "com.tixpy.routemaster",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#f2a66c"
+      },
+      "versionCode": 3
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {

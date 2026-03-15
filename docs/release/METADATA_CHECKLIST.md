@@ -5,9 +5,9 @@
   - [ ] Subtitle: Route visits made simple
   - [ ] Primary Category: Productivity (alt: Business)
   - [ ] Age Rating: 4+
-  - [ ] Support URL: https://tompinataro.github.io/Bloom-Steward/support
-  - [ ] Privacy Policy URL: https://tompinataro.github.io/Bloom-Steward/privacy
-  - [ ] Marketing URL (optional): https://tompinataro.github.io/Bloom-Steward/
+  - [ ] Support URL: https://tompinataro.github.io/RouteMaster/support
+  - [ ] Privacy Policy URL: https://tompinataro.github.io/RouteMaster/privacy
+  - [ ] Marketing URL (optional): https://tompinataro.github.io/RouteMaster/
 
 - [ ] Version Submission (1.0.1)
   - [ ] What’s New: Confirm text from metadata doc

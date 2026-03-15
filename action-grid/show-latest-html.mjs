@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..");
 const SHEET_SYNC_PATH = path.join(__dirname, "sheet-sync.mjs");
-const CANOPI_HTML_PATH = "/Users/tompinataro/My Projects/Canopi/tracker-view.html";
+const CANOPI_HTML_PATH = "/Users/tompinataro/My Projects/Tixpy-Canopi/control/tracker-view.html";
 const LOCAL_HTML_PATH = path.join(__dirname, "tracker-view.html");
 
 function runSheetSync() {

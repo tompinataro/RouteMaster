@@ -93,13 +93,13 @@ android {
         compileSdk rootProject.ext.compileSdkVersion
     }
 
-    namespace 'com.tompinataro.bloomsteward'
+    namespace 'com.tixpy.routemaster'
     defaultConfig {
-        applicationId 'com.tompinataro.bloomsteward'
+        applicationId 'com.tixpy.routemaster'
         minSdkVersion rootProject.ext.has('minSdkVersion') ? rootProject.ext.minSdkVersion : 24
         targetSdkVersion rootProject.ext.has('targetSdkVersion') ? rootProject.ext.targetSdkVersion : 34
-        versionCode 30
-        versionName "1.2.1"
+        versionCode 3
+        versionName "1.2.2"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
