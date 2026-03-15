@@ -68,3 +68,4 @@ typings/
 # ignore package-lock as it complicates merging
 package-lock.jsonlogs/
 logs/
+artifacts/
