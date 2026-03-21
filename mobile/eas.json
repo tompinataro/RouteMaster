@@ -45,7 +45,7 @@
         "gradleCommand": ":app:bundleRelease"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.example.com",
+        "EXPO_PUBLIC_API_URL": "https://api.routemaster.pinataro.com",
         "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
         "NPM_CONFIG_FORCE": "true"
       },
