@@ -22,8 +22,8 @@ export default function LoginFormScreen(_props: Props) {
   const paddingTop = isShort ? spacing(8) : spacing(12);
   const paddingBottom = isShort ? spacing(8) : spacing(10);
   const paddingHorizontal = isShort ? spacing(4) : spacing(6);
-  const [email, setEmail] = useState('tom@pinataro.com');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('demo@example.com');
+  const [password, setPassword] = useState('password');
   const [initialOdometer, setInitialOdometer] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
